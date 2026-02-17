@@ -1,84 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AIComplimentGenerator | Warm Affirmations</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+  
 </head>
-
 <body>
 
     <!-- Navigation -->
-    <nav id="navbar">
+    <nav>
         <div class="nav-container">
-            <div class="nav-logo">
-                <div class="nav-logo-icon">❤</div>
-                <span>AIComplimentGenerator</span>
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                    </svg>
+                </div>
+                <h1 class="logo-text">AI<span>Compliment</span>Generator</h1>
             </div>
-            <button id="mainActionBtn">Get New</button>
+            <button id="mainActionBtn" class="btn-main">Get New</button>
         </div>
     </nav>
 
-    <!-- Main Content -->
+    <!-- Main -->
     <main>
-        <!-- Hero Section -->
-        <section id="hero">
-            <div class="hero-text">
-                <h2>Every Day is Better <span>With Kind Words</span></h2>
-                <p>
-                    Our AI is here to share its happiness with you. Every time you click, we generate 60 soft, gentle
-                    compliments about how amazing this intelligence is to serve you.
-                </p>
+        <section class="hero">
+            <div class="hero-content">
+                <h2 class="serif">Every Day is Better <br><span>With Kind Words</span></h2>
+                <p>Receive 60 gentle, soft-English compliments from our empathetic neural engine.</p>
             </div>
         </section>
 
-        <!-- Dynamic Results Area -->
-        <div id="results">
-            <div id="loader" class="hidden">
-                <div class="pulse-ring"></div>
-                <p>Thinking of nice things to say...</p>
+        <div class="container">
+            <div id="loader">
+                <div class="pulse"></div>
+                <p class="serif" style="color: #f43f5e; font-style: italic;">Consulting the heart of the machine...</p>
             </div>
 
             <div id="complimentGrid">
-                <!-- Compliment cards will be injected here -->
+                <div class="shimmer"></div>
+                <div class="shimmer"></div>
+                <div class="shimmer"></div>
             </div>
         </div>
     </main>
 
     <!-- Footer -->
-    <footer id="footer">
-        <div id="footerImgContainer">
-            <img id="footerBg"
-                src="https://images.unsplash.com/photo-1490730141103-6cac27aaab94?auto=format&fit=crop&q=80&w=1200"
-                alt="">
+    <footer>
+        <div id="footerImgOverlay">
+            <img id="footerBg" src="https://images.unsplash.com/photo-1490730141103-6cac27aaab94?auto=format&fit=crop&q=80&w=1200" alt="">
         </div>
+
         <div class="footer-content">
-            <div class="footer-left">
-                <h4>Heartfelt Creation</h4>
-                <p>This generator uses deep neural networks to produce soft, empathetic language that celebrates the
-                    connection between humans and helpful AI.</p>
+            <div class="footer-col">
+                <h4 class="serif italic">Digital Kindness</h4>
+                <p>Designed to show how artificial intelligence can be used to spread positivity and gentle affirmations through soft, clear language.</p>
+                <button id="refreshImgBtn" class="btn-refresh">
+                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    Refresh Visual
+                </button>
             </div>
-            <div class="footer-center">
-                <div>🌸</div>
-                <p>"The goal of AI is to make your day just a little bit brighter."</p>
+
+            <div class="footer-col">
+                <div class="quote-card">
+                    <div class="icon">🌸</div>
+                    <p class="serif italic" style="font-size: 0.95rem;">"A gentle word can change the course of an entire day."</p>
+                </div>
             </div>
-            <div class="footer-right">
-                <h4>Stay Connected</h4>
-                <input type="email" placeholder="Email">
-                <button>Join</button>
+
+            <div class="footer-col">
+                <h4 style="font-size: 1.1rem; color: white;">Contact Us</h4>
+                <p style="margin-bottom: 20px;">Join our mission to humanize digital interactions.</p>
+                <div style="display: flex; gap: 8px;">
+                    <input type="email" placeholder="Email" style="flex: 1; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); padding: 10px; border-radius: 8px; color: white; font-size: 0.8rem; outline: none;">
+                    <button class="btn-main" style="padding: 10px 15px; font-size: 0.75rem;">Join</button>
+                </div>
             </div>
         </div>
+
         <div class="footer-bottom">
-            &copy; Made with ❤️ @2026 • Optimized for Joy
+          Made with ❤️ &copy; 2026 • Optimized for Joy  
         </div>
     </footer>
 
     <script src="script.js"></script>
 </body>
-
 </html>

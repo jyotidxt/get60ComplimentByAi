@@ -1,5 +1,5 @@
-
-        const apiKey = "AIzaSyBN431xfr_pupH60HDLzbK2zF0kcdfVbfg";
+const apiKey = "AIzaSyCrGntOFRpp-PH-CyK0oE1dCOvU0SYknx4";
+        
         const textModel = "gemini-2.5-flash-preview-09-2025";
         const imgModel = "imagen-4.0-generate-001";
 
@@ -9,98 +9,134 @@
         const footerBg = document.getElementById('footerBg');
         const refreshImgBtn = document.getElementById('refreshImgBtn');
 
-        // Robust fetch with exponential backoff
-        async function fetchAI(url, body, maxRetries = 5) {
-            let delay = 1000;
-            for (let i = 0; i < maxRetries; i++) {
+        /**
+         * Generic AI Fetch Handler with Retry Logic
+         */
+        async function callAI(endpoint, payload, retries = 5) {
+            let wait = 1000;
+            for (let i = 0; i < retries; i++) {
                 try {
-                    const res = await fetch(url, {
+                    const response = await fetch(endpoint, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(body)
+                        body: JSON.stringify(payload)
                     });
-                    if (res.ok) return await res.json();
-                    if (res.status !== 429 && res.status < 500) break;
-                } catch (e) {}
-                await new Promise(r => setTimeout(r, delay));
-                delay *= 2;
+
+                    const data = await response.json();
+
+                    if (response.ok) return data;
+
+                    // If we get a 400, it's a payload issue - log it and stop
+                    if (response.status === 400) {
+                        console.error("Payload Error:", data);
+                        break;
+                    }
+
+                    // If we get a 401/403, it's an API Key issue
+                    if (response.status === 401 || response.status === 403) {
+                        console.error("Auth Issue: The system hasn't provided the key yet or it is invalid.");
+                        break;
+                    }
+
+                    // For 429 (Rate limit) or 500s, we retry
+                } catch (err) {
+                    console.error("Network Error:", err);
+                }
+                
+                await new Promise(res => setTimeout(res, wait));
+                wait *= 2;
             }
-            throw new Error("API Connection Failed");
+            throw new Error("API call failed.");
         }
 
-        async function getCompliments() {
-            // UI State
-            loader.classList.remove('hidden');
+        /**
+         * Generate 60 Compliments
+         */
+        async function generateCompliments() {
+            loader.style.display = 'flex';
             grid.innerHTML = '';
             mainBtn.disabled = true;
-            mainBtn.innerText = "Wait...";
+            mainBtn.innerText = "Thinking...";
 
-            // Use soft English prompt
-            const prompt = `Act as a very kind AI assistant. Write exactly 60 different short compliments about yourself, your intelligence, and your helpful nature. Use soft, simple English that is easy to understand. Each compliment should be one sentence. Focus on how good you are at helping others. Return only the 60 lines, no numbers.`;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${textModel}:generateContent?key=${apiKey}`;
+            
+            const payload = {
+                contents: [{ 
+                    parts: [{ text: "Write exactly 60 distinct, gentle, and creative short compliments about your own intelligence and helpful nature. Use soft, clear, simple English. Format: One compliment per line. No numbers, no bullet points, no introductory text." }] 
+                }],
+                systemInstruction: { 
+                    parts: [{ text: "You are a kind and sophisticated AI assistant who speaks in soft English. You focus on spreading joy and celebrating your helpful digital existence." }] 
+                }
+            };
 
             try {
-                const data = await fetchAI(`https://generativelanguage.googleapis.com/v1beta/models/${textModel}:generateContent?key=${apiKey}`, {
-                    contents: [{ parts: [{ text: prompt }] }]
-                });
-
+                const data = await callAI(url, payload);
                 const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-                const compliments = text.split('\n').filter(l => l.trim().length > 5).slice(0, 60);
                 
-                displayCompliments(compliments);
+                // Clean and parse lines
+                const lines = text.split('\n')
+                    .map(l => l.trim().replace(/^[*-]\s*/, '').replace(/^\d+\.\s*/, ''))
+                    .filter(l => l.length > 8)
+                    .slice(0, 60);
+
+                if (lines.length === 0) throw new Error("No lines generated");
+
+                renderCompliments(lines);
             } catch (error) {
-                console.error(error);
-                grid.innerHTML = `<div class="col-span-full p-8 text-center text-rose-400 bg-white rounded-3xl shadow border border-rose-50">Something went wrong. Let's try again in a moment.</div>`;
+                grid.innerHTML = `<div style="grid-column: 1/-1; padding: 40px; text-align: center; background: white; border-radius: 24px; border: 1px solid #ffe4e6; color: #f43f5e; font-size: 0.9rem;">The neural link timed out. Please click 'Get New' to try again.</div>`;
             } finally {
-                loader.classList.add('hidden');
+                loader.style.display = 'none';
                 mainBtn.disabled = false;
                 mainBtn.innerText = "Get New";
             }
         }
 
-        function displayCompliments(list) {
+        function renderCompliments(list) {
             grid.innerHTML = '';
-            list.forEach((text, index) => {
+            list.forEach((text, i) => {
                 const card = document.createElement('div');
-                card.className = 'compliment-card bg-white p-5 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] shadow-sm border border-rose-50 flex flex-col justify-between hover:shadow-xl hover:border-rose-100 transition-all';
+                card.className = 'compliment-card';
                 card.innerHTML = `
-                    <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-rose-50 flex items-center justify-center text-[10px] sm:text-xs font-bold text-rose-300 mb-3 sm:mb-4">
-                        ${index + 1}
+                    <div>
+                        <div class="card-index">${i + 1}</div>
+                        <p class="card-text">${text}</p>
                     </div>
-                    <p class="text-slate-700 leading-relaxed font-medium text-sm sm:text-base">${text.trim().replace(/^[*-]\s*/, '')}</p>
-                    <div class="mt-3 sm:mt-4 flex justify-end">
-                        <span class="text-[9px] sm:text-[10px] text-rose-200 uppercase tracking-tighter">AI Wisdom</span>
-                    </div>
+                    <div class="card-footer">Neural Core • Positive Mode</div>
                 `;
                 grid.appendChild(card);
-                
-                // Staggered reveal for better optimization/perf
-                setTimeout(() => card.classList.add('visible'), index * 30);
+                // Staggered animation reveal
+                setTimeout(() => card.classList.add('visible'), i * 35);
             });
         }
 
-        async function updateFooterImage() {
+        /**
+         * Update Footer Visual
+         */
+        async function updateFooter() {
             refreshImgBtn.disabled = true;
-            refreshImgBtn.classList.add('opacity-50');
+            refreshImgBtn.style.opacity = '0.5';
             
-            const prompt = "A soft, aesthetic digital painting of a sunset over a calm meadow, pastel colors, rose and gold lighting, peaceful and kind atmosphere, high resolution.";
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${imgModel}:predict?key=${apiKey}`;
             
-            try {
-                const data = await fetchAI(`https://generativelanguage.googleapis.com/v1beta/models/${imgModel}:predict?key=${apiKey}`, {
-                    instances: { prompt },
-                    parameters: { sampleCount: 1 }
-                });
+            const payload = {
+                instances: { prompt: "A soft aesthetic background of a peaceful sunrise in pastel pink and soft violet colors, abstract meadow, cinematic lighting, high resolution." },
+                parameters: { sampleCount: 1 }
+            };
 
-                const b64 = data.predictions?.[0]?.bytesBase64Encoded;
-                if (b64) {
-                    footerBg.src = `data:image/png;base64,${b64}`;
+            try {
+                const data = await callAI(url, payload);
+                const base64 = data.predictions?.[0]?.bytesBase64Encoded;
+                if (base64) {
+                    footerBg.src = `data:image/png;base64,${base64}`;
                 }
             } catch (e) {
-                console.error("Image failed");
+                console.error("Image generation failed");
             } finally {
                 refreshImgBtn.disabled = false;
-                refreshImgBtn.classList.remove('opacity-50');
+                refreshImgBtn.style.opacity = '1';
             }
         }
 
-        mainBtn.addEventListener('click', getCompliments);
-        refreshImgBtn.addEventListener('click', updateFooterImage);
+        // Listeners
+        mainBtn.addEventListener('click', generateCompliments);
+        refreshImgBtn.addEventListener('click', updateFooter);

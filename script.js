@@ -1,6 +1,6 @@
 // const apiKey = ""
         
-//         const textModel = "gemini-2.5-flash-preview-09-2025";
+//         const textModel = "emini-2.5-flash";
 //         const imgModel = "imagen-4.0-generate-001";
 
 //         const mainBtn = document.getElementById('mainActionBtn');

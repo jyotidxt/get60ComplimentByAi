@@ -142,7 +142,7 @@
 //         refreshImgBtn.addEventListener('click', updateFooter);
 
 // Models configuration
-const textModel = "gemini-2.5-flash-preview-09-2025";
+const textModel = "gemini-2.5-flash";
 const imgModel = "imagen-4.0-generate-001";
 
 const mainBtn = document.getElementById('mainActionBtn');
